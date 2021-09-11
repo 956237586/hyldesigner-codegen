@@ -1,0 +1,35 @@
+[comment encoding = UTF-8 /]
+[module common('http://mdse.hylstudio.cn/hyldesigner')]
+
+
+[template public javaFilePath(packageName:String, className:String)]
+[packageName.replaceAll('\\.', '/') + '/' + className.toUpperFirst().concat('.java')/]
+[/template]
+
+
+[template public genEntityClass(domainEntity : DomainEntity)]
+[genPlainClass(domainEntity.id.toUpperFirst(), domainEntity.domainattr)/]
+[/template]
+
+
+[template genPlainClass(className:String, attrs: OrderedSet(Attr))]
+public class [className/] {
+	[for(attr:Attr| attrs) separator ('\n')]
+	[genPrivateJavaField(attr.type,attr.key)/]
+	[/for] 
+}
+[/template]
+
+
+[template genPrivateJavaField(type:String, var:String)]
+private [mappingType(type)/] [var/];
+[/template]
+
+[template mappingType(type:String)]
+[if (type.matches('str'))]
+String[elseif (type.matches('int'))]
+Integer[elseif (type.matches('bool'))]
+Boolean[elseif (type.matches('boolean'))]
+Boolean[else]
+[type.toUpperFirst()/][/if]
+[/template]

@@ -1,0 +1,27 @@
+[comment encoding = UTF-8 /]
+[module main('http://mdse.hylstudio.cn/hyldesigner')]
+
+
+[import cn::hylstudio::mdse::demo::common::domainEntity/]
+[comment][import cn::hylstudio::mdse::demo::common::controller/][/comment]
+
+[template public main(project : Project)]
+[comment @main /]
+[comment] test gen demo [/comment]
+[for(domainEntity : DomainEntity | project.containsDomain)]
+	[domainEntity.genEntityClassFile(project.basePackage)/]
+[/for]
+[comment]gen payload[/comment]
+[for(payload : RequestPayload | project.containsPayload)]
+[comment]	[payload.genRequestPayloadClassFile(project.basePackage + 'model/payload')/][/comment]
+[/for]
+[comment]gen response[/comment]
+[for(response : ResponseResult | project.responseresult)]
+[comment]	[response.genResponseResultClassFile(project.basePackage + 'model/result')/][/comment]
+[/for]	
+[comment]gen controller[/comment]
+[for(controller : Controller | project.controller)]
+[comment]	[controller.genControllerClassFile(project.basePackage + 'controller')/][/comment]
+[/for]
+[/template]
+

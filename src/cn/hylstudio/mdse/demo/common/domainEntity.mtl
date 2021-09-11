@@ -1,0 +1,13 @@
+[comment encoding = UTF-8 /]
+[module domainEntity('http://mdse.hylstudio.cn/hyldesigner')]
+[import cn::hylstudio::mdse::demo::common::common/]
+
+[template public genEntityClassFile(domainEntity : DomainEntity, basePackage:String)]
+	[file (javaFilePath(basePackage, domainEntity.id), false)]
+package [basePackage/];
+[comment][javaFilePath(basePackage,domainEntity.id) /][/comment]
+[domainEntity.genEntityClass()/]
+[comment][domainEntity.genEntityClass()/][/comment]
+	[/file]
+[/template]
+
