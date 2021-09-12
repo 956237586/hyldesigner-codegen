@@ -6,7 +6,7 @@
 [comment][import cn::hylstudio::mdse::demo::common::controller/][/comment]
 
 [template public main(project : Project)]
-[comment @main /]
+[comment] @main[/comment]
 [comment] test gen demo [/comment]
 [for(domainEntity : DomainEntity | project.containsDomain)]
 	[domainEntity.genEntityClassFile(project.basePackage)/]

@@ -12,7 +12,7 @@
 [/template]
 
 
-[template genPlainClass(className:String, attrs: OrderedSet(Attr))]
+[template private genPlainClass(className:String, attrs: OrderedSet(Attr))]
 public class [className/] {
 	[for(attr:Attr| attrs) separator ('\n')]
 	[genPrivateJavaField(attr.type,attr.key)/]
@@ -21,11 +21,11 @@ public class [className/] {
 [/template]
 
 
-[template genPrivateJavaField(type:String, var:String)]
+[template private genPrivateJavaField(type:String, var:String)]
 private [mappingType(type)/] [var/];
 [/template]
 
-[template mappingType(type:String)]
+[template private mappingType(type:String)]
 [if (type.matches('str'))]
 String[elseif (type.matches('int'))]
 Integer[elseif (type.matches('bool'))]
