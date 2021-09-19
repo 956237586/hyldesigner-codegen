@@ -8,7 +8,7 @@
  * Contributors:
  *     Obeo - initial API and implementation
  *******************************************************************************/
-package cn.hylstudio.mdse.demo.common;
+package cn.hylstudio.mdse.demo.gen;
 
 import java.io.File;
 import java.io.IOException;
@@ -35,7 +35,7 @@ public class Main extends AbstractAcceleoGenerator {
      *
      * @generated
      */
-    public static final String MODULE_FILE_NAME = "/cn/hylstudio/mdse/demo/common/main";
+    public static final String MODULE_FILE_NAME = "/cn/hylstudio/mdse/demo/gen/main";
     
     /**
      * The name of the templates that are to be generated.

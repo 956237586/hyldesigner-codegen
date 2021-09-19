@@ -8,7 +8,7 @@
  * Contributors:
  *     Obeo - initial API and implementation
  *******************************************************************************/
-package cn.hylstudio.mdse.demo.common;
+package cn.hylstudio.mdse.demo.gen;
 
 import org.eclipse.core.runtime.Plugin;
 import org.osgi.framework.BundleContext;

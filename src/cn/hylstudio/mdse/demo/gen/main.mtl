@@ -1,0 +1,11 @@
+[comment encoding = UTF-8 /]
+[module main('http://mdse.hylstudio.cn/hyldesigner')]
+[import cn::hylstudio::mdse::demo::gen::domainEntity/]
+
+[template public main(project : Project)]
+[comment @main/]
+[for(aDomainEntity : DomainEntity | project.eAllContents(DomainEntity))]
+	[aDomainEntity.genEntityClassFiles()/]
+[/for]  
+[/template]
+

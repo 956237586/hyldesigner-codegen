@@ -1,0 +1,38 @@
+[comment encoding = UTF-8 /]
+[module common('http://mdse.hylstudio.cn/hyldesigner')]
+
+
+[template public convertPackageNameToFilePath(packageName: String) post(trim())]
+	[packageName.replaceAll('\\.', '/')/]
+[/template]
+
+[template public classNameToFileName(className: String, suffix: String) post(trim())]
+	[className.toUpperFirst().concat('.' + suffix)/]
+[/template]
+
+
+[template public genPlainClass(className: String, content: String) post(trim())]
+[comment]这种模板是文件内容，java文件中间的内容尽量不要有缩进[/comment]
+public class [className/] {
+[content/]
+}
+[/template]
+
+[template public genPrivateJavaField(type: String, var: String) post(trim())]
+private [mappingType(type)/] [var/];
+[/template]
+
+[template private mappingType(type: String) post(trim())]
+[let typeLower: String = type.toLowerCase()]
+	[if (typeLower.startsWith('str'))]
+	String
+	[elseif (typeLower.startsWith('int'))]
+	Integer
+	[elseif (typeLower.startsWith('bool'))]
+	Boolean
+	[else]
+	[type.toUpperFirst()/]
+	[/if]
+[/let]
+[/template]
+
