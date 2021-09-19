@@ -13,7 +13,7 @@ package [domainEntity.queryFullPackageName()/];
 [genPlainClass(domainEntity.id.toUpperFirst(), domainEntityClassContent())/]
 [/template]
 
-[template private domainEntityClassContent(aDomainEntity: DomainEntity))]
+[template private domainEntityClassContent(aDomainEntity: DomainEntity)]
 [for(attr: Attr| aDomainEntity.attrs) separator ('\n')]
 	[genPrivateJavaField(attr.type, attr.key)/]
 [/for]
