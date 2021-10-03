@@ -1,6 +1,7 @@
 [comment encoding = UTF-8 /]
 [module common('http://mdse.hylstudio.cn/hyldesigner')]
 
+[import cn::hylstudio::mdse::demo::gen::classNameGenerator/]
 
 [template public convertPackageNameToFilePath(packageName: String) post(trim())]
 	[packageName.replaceAll('\\.', '/')/]
@@ -10,7 +11,6 @@
 	[className.toUpperFirst().concat('.' + suffix)/]
 [/template]
 
-
 [template public genPlainClass(className: String, content: String) post(trim())]
 [comment]这种模板是文件内容，java文件中间的内容尽量不要有缩进[/comment]
 public class [className/] {
@@ -18,11 +18,48 @@ public class [className/] {
 }
 [/template]
 
-[template public genPrivateJavaField(type: String, var: String) post(trim())]
-private [mappingType(type)/] [var/];
+[template public genNoArgsConstructor(className: String) post(trim())]
+public [className/](){
+}
 [/template]
 
-[template private mappingType(type: String) post(trim())]
+[template public genPrivateJavaField(anAttr:Attr) post(trim())]
+private [mappingType(anAttr)/] [anAttr.key.toLowerFirst()/];
+[/template]
+
+[template public genGetterAndSetter(anAttr:Attr) post(trim())]
+public [mappingType(anAttr)/] get[anAttr.key.toUpperFirst()/]() {
+    return [anAttr.key.toLowerFirst()/];
+}
+
+public void set[anAttr.key.toUpperFirst()/]([mappingType(anAttr)/] [anAttr.key.toLowerFirst()/]) {
+    this.[anAttr.key.toLowerFirst()/] = [anAttr.key.toLowerFirst()/];
+}
+[/template]
+
+[template public mappingType(anAttr:Attr) post(trim())]
+[let typeLower: String = anAttr.type.toLowerCase()]
+	[if (typeLower.equalsIgnoreCase('obj'))]
+		[mappingObjType(anAttr.objType)/]
+	[else]
+		[mappingNormalType(typeLower)/]
+	[/if]
+[/let]
+[/template]
+
+[template private mappingObjType(anAttr:Attr) post(trim())]
+[if(anAttr.oclIsTypeOf(Dto))]
+	[anAttr.oclAsType(Dto).genClassName()/]
+[elseif (anAttr.oclIsTypeOf(RequestPayload))]
+	[anAttr.oclAsType(RequestPayload).genClassName()/]
+[elseif (anAttr.oclIsTypeOf(ResponseResult))]
+	[anAttr.oclAsType(ResponseResult).genClassName()/]
+[else]
+	Object
+[/if]
+[/template]
+
+[template private mappingNormalType(type: String) post(trim())]
 [let typeLower: String = type.toLowerCase()]
 	[if (typeLower.startsWith('str'))]
 	String

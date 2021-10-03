@@ -1,0 +1,34 @@
+[comment encoding = UTF-8 /]
+[module dto('http://mdse.hylstudio.cn/hyldesigner')]
+[import cn::hylstudio::mdse::demo::gen::common/]
+[import cn::hylstudio::mdse::demo::gen::classNameGenerator/]
+[template public genClassFiles(aDto : Dto) post(trim())]
+[file (aDto.queryJavaFilePath(), false)]
+[aDto.classFileTemplate()/]
+[/file]
+[/template]
+
+[template public classFileTemplate (aDto : Dto) post(trim())]
+package [aDto.queryFullPackageName()/];
+[genPlainClass(aDto.genClassName(), classContent())/]
+[/template]
+
+[template private classContent(aDto : Dto)]
+
+[for(attr: Attr| aDto.attrs) separator ('\n')]
+	[genPrivateJavaField(attr)/]
+[/for]
+
+	[genNoArgsConstructor(aDto.genClassName())/]
+
+[for(attr: Attr| aDto.attrs) separator ('\n')]
+	[genGetterAndSetter(attr)/]
+[/for]
+
+[/template]
+
+[query public queryFullPackageName (aDto : Dto) : String = aDto.ancestors(PackageDefine)->reverse().eGet('name')->sep('.') + ''/]
+[query public queryJavaFilePath (aDto : Dto) : String = convertPackageNameToFilePath(aDto.queryFullPackageName()) + '/' + classNameToFileName(aDto.genClassName(), 'java')/]
+
+
+

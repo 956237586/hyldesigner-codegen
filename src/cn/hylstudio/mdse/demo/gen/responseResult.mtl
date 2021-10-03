@@ -1,0 +1,33 @@
+[comment encoding = UTF-8 /]
+[module responseResult('http://mdse.hylstudio.cn/hyldesigner')]
+[import cn::hylstudio::mdse::demo::gen::common/]
+[import cn::hylstudio::mdse::demo::gen::classNameGenerator/]
+[template public genClassFiles(aResponseResult : ResponseResult) post(trim())]
+[file (aResponseResult.queryJavaFilePath(), false)]
+[aResponseResult.classFileTemplate()/]
+[/file]
+[/template]
+
+[template public classFileTemplate (aResponseResult : ResponseResult) post(trim())]
+package [aResponseResult.queryFullPackageName()/];
+[genPlainClass(aResponseResult.genClassName(), classContent())/]
+[/template]
+
+[template private classContent(aResponseResult : ResponseResult)]
+[for(attr: Attr| aResponseResult.attrs) separator ('\n')]
+	[genPrivateJavaField(attr)/]
+[/for]
+
+	[genNoArgsConstructor(aResponseResult.genClassName())/]
+
+[for(attr: Attr| aResponseResult.attrs) separator ('\n')]
+	[genGetterAndSetter(attr)/]
+[/for]
+
+[/template]
+
+[query public queryFullPackageName (aResponseResult : ResponseResult) : String = aResponseResult.ancestors(PackageDefine)->reverse().eGet('name')->sep('.') + ''/]
+[query public queryJavaFilePath (aResponseResult : ResponseResult) : String = convertPackageNameToFilePath(aResponseResult.queryFullPackageName()) + '/' + classNameToFileName(aResponseResult.genClassName(), 'java')/]
+
+
+

@@ -1,0 +1,43 @@
+[comment encoding = UTF-8 /]
+[module requestPayload('http://mdse.hylstudio.cn/hyldesigner')]
+[import cn::hylstudio::mdse::demo::gen::common/]
+[import cn::hylstudio::mdse::demo::gen::classNameGenerator/]
+
+
+[template public genClassFiles(aRequestPayload : RequestPayload) post(trim())]
+[file (aRequestPayload.queryRequestPayloadJavaFilePath(), false)]
+[aRequestPayload.requestPayloadClassFileTemplate()/]
+[/file]
+[/template]
+
+[template public requestPayloadClassFileTemplate (aRequestPayload : RequestPayload) post(trim())]
+package [aRequestPayload.queryFullPackageName()/];
+
+import cn.hylstudio.mdse.demo.realworld.model.request.RequestPayload;
+
+[genRequestPayloadClass(genClassName(aRequestPayload), requestPayloadClassContent())/]
+[/template]
+
+[template public genRequestPayloadClass (className: String, content: String) post(trim())]
+public class [className/] extends RequestPayload {
+[content/]
+}
+[/template]
+
+[template private requestPayloadClassContent(aRequestPayload : RequestPayload)]
+[for(attr: Attr| aRequestPayload.attrs) separator ('\n')]
+	[genPrivateJavaField(attr)/]
+[/for]
+
+	[genNoArgsConstructor(aRequestPayload.genClassName())/]
+
+[for(attr: Attr| aRequestPayload.attrs) separator ('\n')]
+	[genGetterAndSetter(attr)/]
+[/for]
+[/template]
+
+[query public queryFullPackageName (aRequestPayload : RequestPayload) : String = aRequestPayload.ancestors(PackageDefine)->reverse().eGet('name')->sep('.') + ''/]
+[query public queryRequestPayloadJavaFilePath (aRequestPayload : RequestPayload) : String = convertPackageNameToFilePath(aRequestPayload.queryFullPackageName()) + '/' + classNameToFileName(genClassName(aRequestPayload), 'java')/]
+
+
+
