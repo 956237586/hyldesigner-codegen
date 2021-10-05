@@ -73,3 +73,8 @@ public void set[anAttr.key.toUpperFirst()/]([mappingType(anAttr)/] [anAttr.key.t
 [/let]
 [/template]
 
+[template public genStrArr(mappings:OrderedSet(String)) post(trim())]
+[for(mapping: String| mappings) separator (',')]
+"[mapping/]"
+[/for]
+[/template]

@@ -1,0 +1,70 @@
+[comment encoding = UTF-8 /]
+[module controller('http://mdse.hylstudio.cn/hyldesigner')]
+[import cn::hylstudio::mdse::demo::gen::common/]
+[import cn::hylstudio::mdse::demo::gen::requestPayload/]
+[import cn::hylstudio::mdse::demo::gen::responseResult/]
+[import cn::hylstudio::mdse::demo::gen::classNameGenerator/]
+[template public genClassFiles(aController : Controller) post(trim())]
+[file (aController.queryJavaFilePath(), false)]
+[aController.classFileTemplate()/]
+[/file]
+[/template]
+
+[template public classFileTemplate (aController : Controller) post(trim())]
+package [aController.queryFullPackageName()/];
+[aController.genImports()/]
+[aController.classContent()/]
+[/template]
+
+[template genImports(aController : Controller) ]
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RestController;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import cn.hylstudio.mdse.demo.realworld.controller.BaseController;
+[comment]TODO services[/comment]
+import cn.hylstudio.mdse.demo.realworld.service.login.IBizLoginService;
+[for(aRestInterface: RestInterface| aController.eAllContents(RestInterface)) separator ('\n')] 
+import [aRestInterface.payload.queryFullPackageName() + '.' + aRestInterface.payload.genClassName()/];
+import [aRestInterface.result.queryFullPackageName() + '.' + aRestInterface.result.genClassName()/]; 
+[/for]
+[/template]
+
+[template private classContent(aController : Controller)]
+@RestController
+@RequestMapping({[genStrArr(aController.mappings)/]})
+public class [aController.genClassName()/] extends BaseController {
+    private static final Logger LOGGER = LoggerFactory.getLogger([aController.genClassName()/].class);
+    @Autowired
+    private IBizLoginService loginService;
+[comment]TODO model services[/comment]
+	[genInterfaces(aController)/]
+}
+[/template]
+
+[template genInterfaces(aController : Controller) post(trim())]
+[for(aRestInterface: RestInterface| aController.restInterface) separator ('\n')]
+@RequestMapping(value = {[genStrArr(aRestInterface.mappings)/]}, method = {[genMethods(aRestInterface.methods)/]})
+public [mappingType(aRestInterface.result)/] [aRestInterface.name/](@RequestBody [mappingType(aRestInterface.payload)/] [aRestInterface.payload.name/]) {
+    LOGGER.info("[aRestInterface.name/], [aRestInterface.payload.name/] = ['['/]{}[']'/]", [aRestInterface.payload.name/]);
+    [mappingType(aRestInterface.result)/] result = loginService.[aRestInterface.name/]([aRestInterface.payload.name/]);
+    return result;
+}
+[/for]
+[/template]
+
+[template genMethods(methods:OrderedSet(String)) post(trim())]
+[for(method: String| methods) separator (',')]
+RequestMethod.[method/]
+[/for]
+[/template]
+
+
+[query public queryFullPackageName (aController : Controller) : String = aController.ancestors(PackageDefine)->reverse().eGet('name')->sep('.') + ''/]
+[query public queryJavaFilePath (aController : Controller) : String = convertPackageNameToFilePath(aController.queryFullPackageName()) + '/' + classNameToFileName(aController.genClassName(), 'java')/]
+
+
+

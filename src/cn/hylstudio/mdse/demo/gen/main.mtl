@@ -3,6 +3,7 @@
 [import cn::hylstudio::mdse::demo::gen::dto/]
 [import cn::hylstudio::mdse::demo::gen::requestPayload/]
 [import cn::hylstudio::mdse::demo::gen::responseResult/]
+[import cn::hylstudio::mdse::demo::gen::controller/]
 
 [template public main(project : Project)]
 [comment @main/]
@@ -14,6 +15,9 @@
 [/for]  
 [for(aResponseResult : ResponseResult | project.eAllContents(ResponseResult))]
 	[aResponseResult.genClassFiles()/]
-[/for]  
+[/for]
+[for(aController : Controller | project.eAllContents(Controller))]
+	[aController.genClassFiles()/]
+[/for]    
 [/template]
 

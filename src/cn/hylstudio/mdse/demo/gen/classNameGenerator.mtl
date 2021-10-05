@@ -4,4 +4,5 @@
 [query public genClassName (aDto : Dto) : String = aDto.name.toUpperFirst() + 'Dto'/]
 [query public genClassName (aRequestPayload : RequestPayload) : String = aRequestPayload.name.toUpperFirst() + 'RequestPayload'/]
 [query public genClassName (aResponseResult : ResponseResult) : String = aResponseResult.name.toUpperFirst() + 'ResponseResult'/]
+[query public genClassName (aController : Controller) : String = aController.name.toUpperFirst() + 'Controller'/]
 
