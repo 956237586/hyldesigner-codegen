@@ -24,42 +24,46 @@ public [className/](){
 [/template]
 
 [template public genPrivateJavaField(anAttr:Attr) post(trim())]
-private [mappingType(anAttr)/] [anAttr.key.toLowerFirst()/];
+private [mappingType(anAttr)/] [anAttr.name.toLowerFirst()/];
 [/template]
 
 [template public genGetterAndSetter(anAttr:Attr) post(trim())]
-public [mappingType(anAttr)/] get[anAttr.key.toUpperFirst()/]() {
-    return [anAttr.key.toLowerFirst()/];
+public [mappingType(anAttr)/] get[anAttr.name.toUpperFirst()/]() {
+    return [anAttr.name.toLowerFirst()/];
 }
 
-public void set[anAttr.key.toUpperFirst()/]([mappingType(anAttr)/] [anAttr.key.toLowerFirst()/]) {
-    this.[anAttr.key.toLowerFirst()/] = [anAttr.key.toLowerFirst()/];
+public void set[anAttr.name.toUpperFirst()/]([mappingType(anAttr)/] [anAttr.name.toLowerFirst()/]) {
+    this.[anAttr.name.toLowerFirst()/] = [anAttr.name.toLowerFirst()/];
 }
 [/template]
 
 [template public mappingType(anAttr:Attr) post(trim())]
-[let typeLower: String = anAttr.type.toLowerCase()]
-	[if (typeLower.equalsIgnoreCase('obj'))]
-		[mappingObjType(anAttr.objType)/]
-	[else]
-		[mappingNormalType(typeLower)/]
-	[/if]
-[/let]
+[mappingType(anAttr.type)/]
 [/template]
 
-[template private mappingObjType(anAttr:Attr) post(trim())]
-[if(anAttr.oclIsTypeOf(Dto))]
-	[anAttr.oclAsType(Dto).genClassName()/]
-[elseif (anAttr.oclIsTypeOf(RequestPayload))]
-	[anAttr.oclAsType(RequestPayload).genClassName()/]
-[elseif (anAttr.oclIsTypeOf(ResponseResult))]
-	[anAttr.oclAsType(ResponseResult).genClassName()/]
+[template public mappingType(aType:Type) post(trim())]
+[if(aType.oclIsTypeOf(PrimitiveType))]
+	[mappingPrimitiveType(aType.oclAsType(PrimitiveType).type)/]
+[elseif (aType.oclIsTypeOf(ReferencedType))]
+	[mappingReferencedType(aType.oclAsType(ReferencedType))/]
+[else][comment ¶µ¸öµ×/]
+	[mappingReferencedType(aType.oclAsType(ReferencedType))/]
+[/if]
+[/template]
+
+[template private mappingReferencedType(aReferencedType:ReferencedType) post(trim())]
+[if(aReferencedType.oclIsTypeOf(Dto))]
+	[aReferencedType.oclAsType(Dto).genClassName()/]
+[elseif (aReferencedType.oclIsTypeOf(RequestPayload))]
+	[aReferencedType.oclAsType(RequestPayload).genClassName()/]
+[elseif (aReferencedType.oclIsTypeOf(ResponseResult))]
+	[aReferencedType.oclAsType(ResponseResult).genClassName()/]
 [else]
 	Object
 [/if]
 [/template]
 
-[template private mappingNormalType(type: String) post(trim())]
+[template private mappingPrimitiveType(type: String) post(trim())]
 [let typeLower: String = type.toLowerCase()]
 	[if (typeLower.startsWith('str'))]
 	String
