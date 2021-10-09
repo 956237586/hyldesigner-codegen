@@ -82,3 +82,8 @@ public void set[anAttr.name.toUpperFirst()/]([mappingType(anAttr)/] [anAttr.name
 "[mapping/]"
 [/for]
 [/template]
+
+
+[template public genLogger(className:String) post(trim())]
+private static final Logger LOGGER = LoggerFactory.getLogger([className/].class);
+[/template]

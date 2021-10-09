@@ -27,32 +27,67 @@ import org.slf4j.LoggerFactory;
 import cn.hylstudio.mdse.demo.realworld.controller.BaseController;
 [comment]TODO services[/comment]
 import cn.hylstudio.mdse.demo.realworld.service.login.IBizLoginService;
-[for(aRestInterface: RestInterface| aController.eAllContents(RestInterface)) separator ('\n')] 
-import [aRestInterface.payload.queryFullPackageName() + '.' + aRestInterface.payload.genClassName()/];
-import [aRestInterface.result.queryFullPackageName() + '.' + aRestInterface.result.genClassName()/]; 
+
+[for(aRestInterface: RestInterface| aController.eAllContents(RestInterface)) separator ('\n')]
+[genImportsPayload(aRestInterface)/][genImportsResponse(aRestInterface)/]
 [/for]
+[/template]
+
+[template genImportsPayload(aRestInterface: RestInterface)]
+[for(aParameter: Parameter| aRestInterface.eAllContents(Parameter)) separator ('\n')]
+import [aParameter.type.oclAsType(RequestPayload).queryFullPackageName() + '.' + aParameter.type.oclAsType(RequestPayload).genClassName()/];
+[/for]
+[/template]
+
+[template genImportsResponse(aRestInterface: RestInterface)]
+import [aRestInterface.response.ref.type.oclAsType(ResponseResult).queryFullPackageName() + '.' + aRestInterface.response.ref.type.oclAsType(ResponseResult).genClassName()/];
 [/template]
 
 [template private classContent(aController : Controller)]
 @RestController
 @RequestMapping({[genStrArr(aController.mappings)/]})
 public class [aController.genClassName()/] extends BaseController {
-    private static final Logger LOGGER = LoggerFactory.getLogger([aController.genClassName()/].class);
-    @Autowired
-    private IBizLoginService loginService;
-[comment]TODO model services[/comment]
+	[genLogger(aController.genClassName())/]
+
+	[genFields(aController)/]
+
 	[genInterfaces(aController)/]
 }
+[/template]
+
+[template genFields(aController: Controller) post(trim())]
+[for(aInvokeService: InvokeService| aController.eAllContents(InvokeService)) separator ('\n')]
+@Autowired
+private IBiz[aInvokeService.service.name.toUpperFirst()/] [aInvokeService.service.name/];
+[/for]
 [/template]
 
 [template genInterfaces(aController : Controller) post(trim())]
 [for(aRestInterface: RestInterface| aController.restInterface) separator ('\n')]
 @RequestMapping(value = {[genStrArr(aRestInterface.mappings)/]}, method = {[genMethods(aRestInterface.methods)/]})
-public [mappingType(aRestInterface.result)/] [aRestInterface.name/](@RequestBody [mappingType(aRestInterface.payload)/] [aRestInterface.payload.name/]) {
-    LOGGER.info("[aRestInterface.name/], [aRestInterface.payload.name/] = ['['/]{}[']'/]", [aRestInterface.payload.name/]);
-    [mappingType(aRestInterface.result)/] result = loginService.[aRestInterface.name/]([aRestInterface.payload.name/]);
-    return result;
+public [mappingType(aRestInterface.response.ref.type)/] [aRestInterface.name/](@RequestBody [genParamDefList(aRestInterface.params)/]) {
+	[genMainFlow(aRestInterface)/]
 }
+[/for]
+[/template]
+
+[template genMainFlow(aRestInterface: RestInterface) post(trim())]
+LOGGER.info("[aRestInterface.name/], [aRestInterface.params.name/] = ['['/]{}[']'/]", [aRestInterface.params.name/]);
+[for(aOperation: Operation| aRestInterface.interfaceMainFlow.eAllContents(Operation)) separator ('\n')]
+[mappingType(aOperation.response.type)/] [aOperation.response.name/] = [aOperation.oclAsType(InvokeService).service.name/].[aOperation.oclAsType(InvokeService).method/]([genParamList(aRestInterface.params)/]);
+[/for]
+return [aRestInterface.response.ref.name/];
+[/template]
+
+[template genParamDefList(parameters: OrderedSet(Parameter) ) post(trim())]
+[for(aParameter: Parameter| parameters) separator (',\n')]
+[aParameter.type.oclAsType(Type).mappingType()/] [aParameter.name/]
+[/for]
+[/template]
+
+[template genParamList(parameters: OrderedSet(Parameter) ) post(trim())]
+[for(aParameter: Parameter| parameters) separator (',')]
+[aParameter.name/]
 [/for]
 [/template]
 
