@@ -2,6 +2,9 @@
 [module common('http://mdse.hylstudio.cn/hyldesigner')]
 
 [import cn::hylstudio::mdse::demo::gen::classNameGenerator/]
+[import cn::hylstudio::mdse::demo::gen::dto/]
+[import cn::hylstudio::mdse::demo::gen::requestPayload/]
+
 
 [template public convertPackageNameToFilePath(packageName: String) post(trim())]
 	[packageName.replaceAll('\\.', '/')/]
@@ -28,15 +31,26 @@ private [mappingType(anAttr)/] [anAttr.name.toLowerFirst()/];
 [/template]
 
 [template public genGetterAndSetter(anAttr:Attr) post(trim())]
-public [mappingType(anAttr)/] get[anAttr.name.toUpperFirst()/]() {
+[genGetter(anAttr)/]
+
+[genSetter(anAttr)/]
+[/template]
+[template public genGetterMethodName(anAttr:Attr) post(trim())]
+get[anAttr.name.toUpperFirst()/]
+[/template]
+[template public genSetterMethodName(anAttr:Attr) post(trim())]
+set[anAttr.name.toUpperFirst()/]
+[/template]
+[template public genGetter(anAttr:Attr) post(trim())]
+public [mappingType(anAttr)/] [genGetterMethodName(anAttr)/]() {
     return [anAttr.name.toLowerFirst()/];
 }
-
-public void set[anAttr.name.toUpperFirst()/]([mappingType(anAttr)/] [anAttr.name.toLowerFirst()/]) {
+[/template]
+[template public genSetter(anAttr:Attr) post(trim())]
+public void [genSetterMethodName(anAttr)/]([mappingType(anAttr)/] [anAttr.name.toLowerFirst()/]) {
     this.[anAttr.name.toLowerFirst()/] = [anAttr.name.toLowerFirst()/];
 }
 [/template]
-
 [template public mappingType(anAttr:Attr) post(trim())]
 [mappingType(anAttr.type)/]
 [/template]
@@ -86,4 +100,17 @@ public void set[anAttr.name.toUpperFirst()/]([mappingType(anAttr)/] [anAttr.name
 
 [template public genLogger(className:String) post(trim())]
 private static final Logger LOGGER = LoggerFactory.getLogger([className/].class);
+[/template]
+
+
+[template public commonGenReferencedTypeCheckCode (varRef:String, type:Type, varRefName:String) post(trim()) ]
+[if(type.oclIsTypeOf(Dto))]
+[type.oclAsType(Dto).genCheckCode(varRef, varRefName)/]
+[elseif (type.oclIsTypeOf(RequestPayload))]
+[type.oclAsType(RequestPayload).genCheckCode(varRef, varRefName)/]
+[comment][elseif (type.oclIsTypeOf(ResponseResult))][/comment]
+[comment]	[type.oclAsType(ResponseResult).genCheckCode()/][/comment]
+[else]
+
+[/if]
 [/template]

@@ -2,6 +2,8 @@
 [module dto('http://mdse.hylstudio.cn/hyldesigner')]
 [import cn::hylstudio::mdse::demo::gen::common/]
 [import cn::hylstudio::mdse::demo::gen::classNameGenerator/]
+[import cn::hylstudio::mdse::demo::gen::abstractCheckRule/]
+
 [template public genClassFiles(aDto : Dto) post(trim())]
 [file (aDto.queryJavaFilePath(), false)]
 [aDto.classFileTemplate()/]
@@ -26,6 +28,27 @@ package [aDto.queryFullPackageName()/];
 [/for]
 
 [/template]
+
+[template public genCheckCode (aDto : Dto, varRef:String, varRefName:String)  post(trim())]
+[comment]实体完整性[/comment]
+[for(attr: Attr| aDto.attrs)]
+[genDomainCheckCode(attr, varRef, varRefName)/][genReferencedCheckCode(attr, varRef, varRefName)/]
+[/for]
+[comment]TODO 用户定义完整性[/comment]
+[/template]
+
+[template public genReferencedCheckCode (attr : Attr, varRef:String, varRefName:String) post(trim())]
+[for(anAbstractCheckRule : AbstractCheckRule | attr.eAllContents(AbstractCheckRule))]
+	[anAbstractCheckRule.genReferencedCheckCode(varRef, attr, varRefName)/]
+[/for]  
+[/template]
+
+[template public genDomainCheckCode (attr : Attr, varRef:String, varRefName:String)post(trim())]
+[for(anAbstractCheckRule : AbstractCheckRule | attr.eAllContents(AbstractCheckRule))]
+	[anAbstractCheckRule.genDomainCheckCode(varRef, attr, varRefName)/]
+[/for]
+[/template]
+
 
 [query public queryFullPackageName (aDto : Dto) : String = aDto.ancestors(PackageDefine)->reverse().eGet('name')->sep('.') + ''/]
 [query public queryJavaFilePath (aDto : Dto) : String = convertPackageNameToFilePath(aDto.queryFullPackageName()) + '/' + classNameToFileName(aDto.genClassName(), 'java')/]

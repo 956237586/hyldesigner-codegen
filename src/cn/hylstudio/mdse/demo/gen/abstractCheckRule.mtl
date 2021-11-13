@@ -1,0 +1,75 @@
+[comment encoding = UTF-8 /]
+[module abstractCheckRule('http://mdse.hylstudio.cn/hyldesigner')]
+[import cn::hylstudio::mdse::demo::gen::common/]
+[import cn::hylstudio::mdse::demo::gen::dto/]
+[import cn::hylstudio::mdse::demo::gen::classNameGenerator/]
+
+
+[template public genDomainCheckCode(anAbstractCheckRule : AbstractCheckRule, varRef:String, attr:Attr, varRefName:String) post(trim())]
+[if(anAbstractCheckRule.oclIsKindOf(PrimitiveTypeCheckRule) and attr.type.oclIsTypeOf(PrimitiveType))]
+[genPrimitiveChekRuleCode(anAbstractCheckRule.oclAsType(PrimitiveTypeCheckRule), attr.type.oclAsType(PrimitiveType).type, varRef, attr, varRefName)/]
+[/if]
+[/template]
+
+[template public genPrimitiveChekRuleCode (aPrimitiveTypeCheckRule : PrimitiveTypeCheckRule, type:String, varRef:String, attr:Attr, varRefName:String) post(trim()) ]
+[let typeLower: String = type.toLowerCase()]
+	[if (typeLower.startsWith('str') and aPrimitiveTypeCheckRule.oclIsKindOf(StringTypeCheckRule))]
+[genStringTypeCheckCode(aPrimitiveTypeCheckRule.oclAsType(StringTypeCheckRule),  varRef, mappingType(attr), attr, varRefName)/]
+	[elseif (typeLower.startsWith('int'))]
+Integer
+	[elseif (typeLower.startsWith('bool'))]
+Boolean
+	[else]
+[type.toUpperFirst()/]
+	[/if]
+[/let]
+[/template]
+
+[template public genStringTypeCheckCode (aStringTypeCheckRule:StringTypeCheckRule, varRef:String, type:String, attr:Attr, varRefName:String) post(trim()) ]
+[if(aStringTypeCheckRule.oclIsTypeOf(NotEmptyCheckRule))]
+[comment]//debug genNotEmptyCheckRule([varRef/] + '.' + [genGetterMethodName(attr)/] + '()', [varRefName/] + '.' + [attr.name/]) begin[/comment]
+[genNotEmptyCheckRule(varRef + '.' + genGetterMethodName(attr) + '()', varRefName + '.' + attr.name)/]
+[comment]//genNotEmptyCheckRule([varRef/] + '.' + [genGetterMethodName(attr)/] + '()', [varRefName/] + '.' + [attr.name/]) end[/comment]
+[elseif (aStringTypeCheckRule.oclIsTypeOf(LengthCheckRule))]
+[comment]aStringTypeCheckRule.oclAsType(LengthCheckRule)[/comment]
+[elseif (aStringTypeCheckRule.oclIsTypeOf(RegexCheckRule))]
+[comment]aStringTypeCheckRule.oclAsType(RegexCheckRule)[/comment]
+[else]
+[comment]//genStringTypeCheckCode [varRef/]|[attr.name/]|[varRefName/] unknown[/comment]
+[/if]
+[/template]
+
+[template public genReferencedCheckCode(anAbstractCheckRule : AbstractCheckRule, varRef:String, attr:Attr, varRefName:String) post(trim())]
+[if(anAbstractCheckRule.oclIsKindOf(ReferencedTypeCheckRule))]
+[mappingReferencedRuleType(anAbstractCheckRule.oclAsType(ReferencedTypeCheckRule), varRef, attr, varRefName)/]
+[/if]
+[/template]
+
+[template public mappingReferencedRuleType (aReferencedTypeCheckRule : ReferencedTypeCheckRule, varRef:String, attr:Attr, varRefName:String)  post(trim())]
+[if(aReferencedTypeCheckRule.oclIsTypeOf(HasValueRefCheckRule))]
+[comment]//debug genMustNotNullCheckRule([varRef/] + '.' + [genGetterMethodName(attr)/] + '()', [varRefName/] + '.' + [attr.name/]) begin[/comment]
+[genMustNotNullCheckRule(varRef + '.' + genGetterMethodName(attr) + '()', varRefName + '.' + attr.name)/]
+[comment]//denig genMustNotNullCheckRule([varRef/] + '.' + [genGetterMethodName(attr)/] + '()', [varRefName/] + '.' + [attr.name/]) end[/comment]
+
+[comment]//debug genReferencedTypeCheckCode([varRef/] + '.' + [attr.name/], [attr.type/]) begin[/comment]
+[mappingType(attr)/] [attr.name/] = [varRef + '.' + genGetterMethodName(attr) + '()'/];
+[genReferencedTypeCheckCode(attr.name, attr.type, varRef + '.' + attr.name)/]
+[comment]//debug genReferencedTypeCheckCode([varRef/] + '.' + [attr.name/], [attr.type/]) end[/comment]
+[else]
+//mappingReferencedRuleType [varRef/]|[attr.name/]|[varRefName/] unknown
+[/if]
+[/template]
+
+[template public genReferencedTypeCheckCode (varRef:String, type:Type, varRefName:String) post(trim()) ]
+[if(type.oclIsKindOf(ReferencedType))]
+[commonGenReferencedTypeCheckCode(varRef, type, varRefName)/]
+[/if]
+[/template]
+
+[template public genMustNotNullCheckRule (varRef : String, varRefName:String) post(trim())]
+ValueUtils.nonNull([varRef/], "empty [varRefName/]");
+[/template]
+
+[template public genNotEmptyCheckRule (varRef : String, varRefName:String) post(trim())]
+ValueUtils.notEmpty([varRef/], "empty [varRefName/]");
+[/template]

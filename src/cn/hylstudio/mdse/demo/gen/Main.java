@@ -346,6 +346,9 @@ public class Main extends AbstractAcceleoGenerator {
         if (!isInWorkspace(cn.hylstudio.mdse.hyldesigner.control.ControlPackage.class)) {
             resourceSet.getPackageRegistry().put(cn.hylstudio.mdse.hyldesigner.control.ControlPackage.eINSTANCE.getNsURI(), cn.hylstudio.mdse.hyldesigner.control.ControlPackage.eINSTANCE);
         }
+        if (!isInWorkspace(cn.hylstudio.mdse.hyldesigner.check.CheckPackage.class)) {
+            resourceSet.getPackageRegistry().put(cn.hylstudio.mdse.hyldesigner.check.CheckPackage.eINSTANCE.getNsURI(), cn.hylstudio.mdse.hyldesigner.check.CheckPackage.eINSTANCE);
+        }
         
         /*
          * If you want to change the content of this method, do NOT forget to change the "@generated"
