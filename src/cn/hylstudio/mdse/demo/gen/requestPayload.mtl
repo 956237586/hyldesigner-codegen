@@ -53,7 +53,8 @@ public void check[aRequestPayload.genClassName()/]([aRequestPayload.genClassName
 
 [template public genCheckCode (aRequestPayload : RequestPayload, varRef:String, varRefName:String)  post(trim())]
 [for(attr: Attr| aRequestPayload.attrs)]
-[genDomainCheckCode(attr, varRef, varRefName)/][genReferencedCheckCode(attr, varRef, varRefName)/]
+[genDomainCheckCode(attr, varRef, varRefName)/]
+[genReferencedCheckCode(attr, varRef, varRefName)/]
 [/for]
 [comment]TODO 用户定义完整性[/comment]
 [/template]

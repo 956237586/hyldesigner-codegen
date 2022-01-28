@@ -15,46 +15,77 @@
 [let typeLower: String = type.toLowerCase()]
 	[if (typeLower.startsWith('str') and aPrimitiveTypeCheckRule.oclIsKindOf(StringTypeCheckRule))]
 [genStringTypeCheckCode(aPrimitiveTypeCheckRule.oclAsType(StringTypeCheckRule),  varRef, mappingType(attr), attr, varRefName)/]
-	[elseif (typeLower.startsWith('int'))]
-Integer
+	[elseif ((typeLower.startsWith('int') or typeLower.startsWith('long')) and aPrimitiveTypeCheckRule.oclIsKindOf(NumberTypeCheckRule))]
+[genNumberTypeCheckCode(aPrimitiveTypeCheckRule.oclAsType(NumberTypeCheckRule),  varRef, mappingType(attr), attr, varRefName)/]
 	[elseif (typeLower.startsWith('bool'))]
-Boolean
+[genBoolTypeCheckCode(aPrimitiveTypeCheckRule.oclAsType(BoolTypeCheckRule),  varRef, mappingType(attr), attr, varRefName)/]
 	[else]
-[type.toUpperFirst()/]
+// [type.toUpperFirst()/] check from genPrimitiveChekRuleCode
 	[/if]
 [/let]
 [/template]
 
 [template public genStringTypeCheckCode (aStringTypeCheckRule:StringTypeCheckRule, varRef:String, type:String, attr:Attr, varRefName:String) post(trim()) ]
 [if(aStringTypeCheckRule.oclIsTypeOf(NotEmptyCheckRule))]
-[comment]//debug genNotEmptyCheckRule([varRef/] + '.' + [genGetterMethodName(attr)/] + '()', [varRefName/] + '.' + [attr.name/]) begin[/comment]
 [genNotEmptyCheckRule(varRef + '.' + genGetterMethodName(attr) + '()', varRefName + '.' + attr.name)/]
-[comment]//genNotEmptyCheckRule([varRef/] + '.' + [genGetterMethodName(attr)/] + '()', [varRefName/] + '.' + [attr.name/]) end[/comment]
 [elseif (aStringTypeCheckRule.oclIsTypeOf(LengthCheckRule))]
-[comment]aStringTypeCheckRule.oclAsType(LengthCheckRule)[/comment]
+[genStringLengthCheckRule(varRef + '.' + genGetterMethodName(attr) + '()', varRefName + '.' + attr.name, aStringTypeCheckRule.oclAsType(LengthCheckRule))/]
 [elseif (aStringTypeCheckRule.oclIsTypeOf(RegexCheckRule))]
-[comment]aStringTypeCheckRule.oclAsType(RegexCheckRule)[/comment]
+[genStringRegexCheckRule(varRef + '.' + genGetterMethodName(attr) + '()', varRefName + '.' + attr.name, aStringTypeCheckRule.oclAsType(RegexCheckRule))/]
 [else]
 [comment]//genStringTypeCheckCode [varRef/]|[attr.name/]|[varRefName/] unknown[/comment]
 [/if]
 [/template]
 
+
+[template public genNumberTypeCheckCode (aNumberTypeCheckRule:NumberTypeCheckRule, varRef:String, type:String, attr:Attr, varRefName:String) post(trim()) ]
+[let typeLower: String = type.toLowerCase()]
+	[if (typeLower.startsWith('int') and aNumberTypeCheckRule.oclIsKindOf(IntegerTypeCheckRule))]
+[genIntegerTypeCheckCode(aNumberTypeCheckRule.oclAsType(IntegerTypeCheckRule),  varRef, mappingType(attr), attr, varRefName)/]
+	[elseif (typeLower.startsWith('long') and aNumberTypeCheckRule.oclIsKindOf(LongTypeCheckRule))]
+[genLongTypeCheckCode(aNumberTypeCheckRule.oclAsType(LongTypeCheckRule),  varRef, mappingType(attr), attr, varRefName)/]
+	[else]
+	[/if]
+[/let]
+[/template]
+
+
+[template public genIntegerTypeCheckCode (aIntegerTypeCheckRule:IntegerTypeCheckRule, varRef:String, type:String, attr:Attr, varRefName:String) post(trim()) ]
+[if(aIntegerTypeCheckRule.oclIsTypeOf(IntegerRangeCheckRule))]
+[genIntegerRangeCheckRule(varRef + '.' + genGetterMethodName(attr) + '()', varRefName + '.' + attr.name, aIntegerTypeCheckRule.oclAsType(IntegerRangeCheckRule))/]
+[else]
+[/if]
+[/template]
+
+
+[template public genLongTypeCheckCode (aLongTypeCheckRule:LongTypeCheckRule, varRef:String, type:String, attr:Attr, varRefName:String) post(trim()) ]
+[if(aLongTypeCheckRule.oclIsTypeOf(LongRangeCheckRule))]
+[genLongRangeCheckRule(varRef + '.' + genGetterMethodName(attr) + '()', varRefName + '.' + attr.name, aLongTypeCheckRule.oclAsType(LongRangeCheckRule))/]
+[else]
+[/if]
+[/template]
+
+[template public genBoolTypeCheckCode (aBoolTypeCheckRule:BoolTypeCheckRule, varRef:String, type:String, attr:Attr, varRefName:String) post(trim()) ]
+[if(aBoolTypeCheckRule.oclIsTypeOf(TrueValueCheckRule))]
+[genBoolTypeTrueCheckRule(varRef + '.' + genGetterMethodName(attr) + '()', varRefName + '.' + attr.name, aBoolTypeCheckRule.oclAsType(TrueValueCheckRule))/]
+[elseif (aBoolTypeCheckRule.oclIsTypeOf(FalseValueCheckRule))]
+[genBoolTypeFalseCheckRule(varRef + '.' + genGetterMethodName(attr) + '()', varRefName + '.' + attr.name, aBoolTypeCheckRule.oclAsType(FalseValueCheckRule))/]
+[else]
+[/if]
+[/template]
+
+
 [template public genReferencedCheckCode(anAbstractCheckRule : AbstractCheckRule, varRef:String, attr:Attr, varRefName:String) post(trim())]
-[if(anAbstractCheckRule.oclIsKindOf(ReferencedTypeCheckRule))]
+[if(attr.type.oclIsKindOf(ReferencedType) and anAbstractCheckRule.oclIsKindOf(ReferencedTypeCheckRule))]
 [mappingReferencedRuleType(anAbstractCheckRule.oclAsType(ReferencedTypeCheckRule), varRef, attr, varRefName)/]
 [/if]
 [/template]
 
 [template public mappingReferencedRuleType (aReferencedTypeCheckRule : ReferencedTypeCheckRule, varRef:String, attr:Attr, varRefName:String)  post(trim())]
 [if(aReferencedTypeCheckRule.oclIsTypeOf(HasValueRefCheckRule))]
-[comment]//debug genMustNotNullCheckRule([varRef/] + '.' + [genGetterMethodName(attr)/] + '()', [varRefName/] + '.' + [attr.name/]) begin[/comment]
 [genMustNotNullCheckRule(varRef + '.' + genGetterMethodName(attr) + '()', varRefName + '.' + attr.name)/]
-[comment]//denig genMustNotNullCheckRule([varRef/] + '.' + [genGetterMethodName(attr)/] + '()', [varRefName/] + '.' + [attr.name/]) end[/comment]
-
-[comment]//debug genReferencedTypeCheckCode([varRef/] + '.' + [attr.name/], [attr.type/]) begin[/comment]
 [mappingType(attr)/] [attr.name/] = [varRef + '.' + genGetterMethodName(attr) + '()'/];
 [genReferencedTypeCheckCode(attr.name, attr.type, varRef + '.' + attr.name)/]
-[comment]//debug genReferencedTypeCheckCode([varRef/] + '.' + [attr.name/], [attr.type/]) end[/comment]
 [else]
 //mappingReferencedRuleType [varRef/]|[attr.name/]|[varRefName/] unknown
 [/if]
@@ -72,4 +103,30 @@ ValueUtils.nonNull([varRef/], "empty [varRefName/]");
 
 [template public genNotEmptyCheckRule (varRef : String, varRefName:String) post(trim())]
 ValueUtils.notEmpty([varRef/], "empty [varRefName/]");
+[/template]
+
+[template public genStringLengthCheckRule (varRef : String, varRefName:String, aLengthCheckRule:LengthCheckRule) post(trim())]
+ValueUtils.checkLength([varRef/], [aLengthCheckRule.min/]L, [aLengthCheckRule.max/]L, "[varRefName/] length error");
+[/template]
+
+[template public genStringRegexCheckRule (varRef : String, varRefName:String, aRegexCheckRule:RegexCheckRule) post(trim())]
+ValueUtils.checkRegex([varRef/], "[aRegexCheckRule.regex/]", "[varRefName/] regex check error");
+[/template]
+
+[template public genIntegerRangeCheckRule (varRef : String, varRefName:String, aIntegerRangeCheckRule:IntegerRangeCheckRule) post(trim())]
+ValueUtils.nonNull([varRef/], "empty [varRefName/]");
+ValueUtils.checkNumberRange([varRef/], [aIntegerRangeCheckRule.min/], [aIntegerRangeCheckRule.max/], "[varRefName/] range error");
+[/template]
+
+[template public genLongRangeCheckRule (varRef : String, varRefName:String, aLongRangeCheckRule:LongRangeCheckRule) post(trim())]
+ValueUtils.nonNull([varRef/], "empty [varRefName/]");
+ValueUtils.checkNumberRange([varRef/], [aLongRangeCheckRule.min/]L, [aLongRangeCheckRule.max/]L, "[varRefName/] range error");
+[/template]
+
+[template public genBoolTypeTrueCheckRule (varRef : String, varRefName:String, aLongRangeCheckRule:TrueValueCheckRule) post(trim())]
+ValueUtils.checkTrue([varRef/], "[varRefName/] value error");
+[/template]
+
+[template public genBoolTypeFalseCheckRule (varRef : String, varRefName:String, aLongRangeCheckRule:FalseValueCheckRule) post(trim())]
+ValueUtils.checkFalse([varRef/], "[varRefName/] value error");
 [/template]
