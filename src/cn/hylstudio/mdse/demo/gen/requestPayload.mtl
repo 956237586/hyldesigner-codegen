@@ -61,17 +61,16 @@ public void check[aRequestPayload.genClassName()/]([aRequestPayload.genClassName
 
 
 [template public genDomainCheckCode (attr : Attr, varRef:String, varRefName:String)post(trim())]
+[comment][if(attr.oclIsTypeOf(RequestAttr) and not attr.oclAsType(RequestAttr).attrRef.oclIsUndefined())][/comment]
+[comment]//[attr.name/] has refer domainAttr[/comment]
+[comment][/if][/comment]
 [for(anAbstractCheckRule : AbstractCheckRule | attr.eAllContents(AbstractCheckRule))]
-[comment]//debug anAbstractCheckRule.genDomainCheckCode([varRef/], [attr/]) begin[/comment]
 [anAbstractCheckRule.genDomainCheckCode(varRef, attr, varRefName)/]
-[comment]//debug anAbstractCheckRule.genDomainCheckCode([varRef/], [attr/]) end[/comment]
 [/for]
 [/template]
 
 [template public genReferencedCheckCode (attr : Attr, varRef:String, varRefName:String) post(trim())]
 [for(anAbstractCheckRule : AbstractCheckRule | attr.eAllContents(AbstractCheckRule))]
-[comment]//debug anAbstractCheckRule.genReferencedCheckCode([varRef/], [attr/]) begin[/comment]
 [anAbstractCheckRule.genReferencedCheckCode(varRef, attr, varRefName)/]
-[comment]//debug anAbstractCheckRule.genReferencedCheckCode([varRef/], [attr/]) end[/comment]
 [/for]  
 [/template]

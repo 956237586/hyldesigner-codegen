@@ -6,8 +6,24 @@
 
 
 [template public genDomainCheckCode(anAbstractCheckRule : AbstractCheckRule, varRef:String, attr:Attr, varRefName:String) post(trim())]
-[if(anAbstractCheckRule.oclIsKindOf(PrimitiveTypeCheckRule) and attr.type.oclIsTypeOf(PrimitiveType))]
-[genPrimitiveChekRuleCode(anAbstractCheckRule.oclAsType(PrimitiveTypeCheckRule), attr.type.oclAsType(PrimitiveType).type, varRef, attr, varRefName)/]
+[let type: Type = attr.type]
+[genDomainPrimitiveTypeCheckCode(anAbstractCheckRule, varRef, attr, varRefName, type)/]
+[elselet attr:DtoAttr = attr]
+[genDomainPrimitiveTypeCheckCode(anAbstractCheckRule, varRef, attr, varRefName, attr.attrRef.type)/]
+[elselet attr:RequestAttr = attr]
+[genDomainPrimitiveTypeCheckCode(anAbstractCheckRule, varRef, attr, varRefName, attr.attrRef.type)/]
+[elselet attr:ResponseAttr = attr]
+[genDomainPrimitiveTypeCheckCode(anAbstractCheckRule, varRef, attr, varRefName, attr.attrRef.type)/]
+[elselet attr:DbAttr = attr]
+[genDomainPrimitiveTypeCheckCode(anAbstractCheckRule, varRef, attr, varRefName, attr.attrRef.type)/]
+[else]
+//[attr.name/] unknown attrType
+[/let]
+[/template]
+
+[template public genDomainPrimitiveTypeCheckCode(anAbstractCheckRule : AbstractCheckRule, varRef:String, attr:Attr, varRefName:String, type:Type) post(trim())]
+[if(anAbstractCheckRule.oclIsKindOf(PrimitiveTypeCheckRule) and type.oclIsTypeOf(PrimitiveType))]
+[genPrimitiveChekRuleCode(anAbstractCheckRule.oclAsType(PrimitiveTypeCheckRule), type.oclAsType(PrimitiveType).type, varRef, attr, varRefName)/]
 [/if]
 [/template]
 
@@ -76,7 +92,23 @@
 
 
 [template public genReferencedCheckCode(anAbstractCheckRule : AbstractCheckRule, varRef:String, attr:Attr, varRefName:String) post(trim())]
-[if(attr.type.oclIsKindOf(ReferencedType) and anAbstractCheckRule.oclIsKindOf(ReferencedTypeCheckRule))]
+[let type: Type = attr.type]
+[genReferencedReferencedTypeCheckCode(anAbstractCheckRule, varRef, attr, varRefName, type)/]
+[elselet attr:DtoAttr = attr]
+[genReferencedReferencedTypeCheckCode(anAbstractCheckRule, varRef, attr, varRefName, attr.attrRef.type)/]
+[elselet attr:RequestAttr = attr]
+[genReferencedReferencedTypeCheckCode(anAbstractCheckRule, varRef, attr, varRefName, attr.attrRef.type)/]
+[elselet attr:ResponseAttr = attr]
+[genReferencedReferencedTypeCheckCode(anAbstractCheckRule, varRef, attr, varRefName, attr.attrRef.type)/]
+[elselet attr:DbAttr = attr]
+[genReferencedReferencedTypeCheckCode(anAbstractCheckRule, varRef, attr, varRefName, attr.attrRef.type)/]
+[else]
+//[attr.name/] unknown attrType
+[/let]
+[/template]
+
+[template public genReferencedReferencedTypeCheckCode(anAbstractCheckRule : AbstractCheckRule, varRef:String, attr:Attr, varRefName:String, type:Type) post(trim())]
+[if(type.oclIsKindOf(ReferencedType) and anAbstractCheckRule.oclIsKindOf(ReferencedTypeCheckRule))]
 [mappingReferencedRuleType(anAbstractCheckRule.oclAsType(ReferencedTypeCheckRule), varRef, attr, varRefName)/]
 [/if]
 [/template]

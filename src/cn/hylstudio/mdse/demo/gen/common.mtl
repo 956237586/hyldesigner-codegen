@@ -51,8 +51,21 @@ public void [genSetterMethodName(anAttr)/]([mappingType(anAttr)/] [anAttr.name.t
     this.[anAttr.name.toLowerFirst()/] = [anAttr.name.toLowerFirst()/];
 }
 [/template]
+
 [template public mappingType(anAttr:Attr) post(trim())]
+[let type:Type = anAttr.type]
 [mappingType(anAttr.type)/]
+[elselet attr: DtoAttr = anAttr]
+[mappingType(attr.attrRef.type)/]
+[elselet attr: RequestAttr = anAttr]
+[mappingType(attr.attrRef.type)/]
+[elselet attr: ResponseAttr = anAttr]
+[mappingType(attr.attrRef.type)/]
+[elselet attr: DbAttr = anAttr]
+[mappingType(attr.attrRef.type)/]
+[else]
+//mappingType unknown type
+[/let]
 [/template]
 
 [template public mappingType(aType:Type) post(trim())]
