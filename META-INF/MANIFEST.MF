@@ -1,5 +1,6 @@
 Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
+Automatic-Module-Name: hyldesigner-codegen
 Bundle-Name: Acceleo Sample Module Runtime Plug-in
 Bundle-SymbolicName: org.eclipse.acceleo.module.sample
 Bundle-Version: 1.0.0.qualifier

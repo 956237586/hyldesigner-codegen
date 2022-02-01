@@ -16,7 +16,7 @@ package [aController.queryFullPackageName()/];
 [aController.classContent()/]
 [/template]
 
-[template genImports(aController : Controller) ]
+[template private genImports(aController : Controller) ]
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -33,14 +33,18 @@ import cn.hylstudio.mdse.demo.realworld.service.login.IBizLoginService;
 [/for]
 [/template]
 
-[template genImportsPayload(aRestInterface: RestInterface)]
+[template private genImportsPayload(aRestInterface: RestInterface)]
 [for(aParameter: Parameter| aRestInterface.eAllContents(Parameter)) separator ('\n')]
-import [aParameter.type.oclAsType(RequestPayload).queryFullPackageName() + '.' + aParameter.type.oclAsType(RequestPayload).genClassName()/];
+[let payload:RequestPayload = aParameter.type]
+import [payload.queryFullPackageName() + '.' + payload.genClassName()/];
+[/let]
 [/for]
 [/template]
 
-[template genImportsResponse(aRestInterface: RestInterface)]
-import [aRestInterface.response.ref.type.oclAsType(ResponseResult).queryFullPackageName() + '.' + aRestInterface.response.ref.type.oclAsType(ResponseResult).genClassName()/];
+[template private genImportsResponse(aRestInterface: RestInterface) post(trim())]
+[let aResponseResult:ResponseResult = aRestInterface.response.ref.type]
+import [aResponseResult.queryFullPackageName() + '.' + aResponseResult.genClassName()/];
+[/let]
 [/template]
 
 [template private classContent(aController : Controller)]
@@ -55,14 +59,14 @@ public class [aController.genClassName()/] extends BaseController {
 }
 [/template]
 
-[template genFields(aController: Controller) post(trim())]
+[template private genFields(aController: Controller) post(trim())]
 [for(aInvokeService: InvokeService| aController.eAllContents(InvokeService)) separator ('\n')]
 @Autowired
 private IBiz[aInvokeService.service.name.toUpperFirst()/] [aInvokeService.service.name/];
 [/for]
 [/template]
 
-[template genInterfaces(aController : Controller) post(trim())]
+[template private genInterfaces(aController : Controller) post(trim())]
 [for(aRestInterface: RestInterface| aController.restInterface) separator ('\n')]
 @RequestMapping(value = {[genStrArr(aRestInterface.mappings)/]}, method = {[genMethods(aRestInterface.methods)/]})
 public [mappingType(aRestInterface.response.ref.type)/] [aRestInterface.name/](@RequestBody [genParamDefList(aRestInterface.params)/]) {
@@ -71,27 +75,29 @@ public [mappingType(aRestInterface.response.ref.type)/] [aRestInterface.name/](@
 [/for]
 [/template]
 
-[template genMainFlow(aRestInterface: RestInterface) post(trim())]
+[template private genMainFlow(aRestInterface: RestInterface) post(trim())]
 LOGGER.info("[aRestInterface.name/], [aRestInterface.params.name/] = ['['/]{}[']'/]", [aRestInterface.params.name/]);
 [for(aOperation: Operation| aRestInterface.interfaceMainFlow.eAllContents(Operation)) separator ('\n')]
-[mappingType(aOperation.response.type)/] [aOperation.response.name/] = [aOperation.oclAsType(InvokeService).service.name/].[aOperation.oclAsType(InvokeService).method/]([genParamList(aRestInterface.params)/]);
+[let aInvokeService: InvokeService = aOperation]
+[mappingType(aOperation.response.type)/] [aOperation.response.name/] = [aInvokeService.service.name/].[aInvokeService.method/]([genParamList(aRestInterface.params)/]);
+[/let]
 [/for]
 return [aRestInterface.response.ref.name/];
 [/template]
 
-[template genParamDefList(parameters: OrderedSet(Parameter) ) post(trim())]
+[template private genParamDefList(parameters: OrderedSet(Parameter) ) post(trim())]
 [for(aParameter: Parameter| parameters) separator (',\n')]
-[aParameter.type.oclAsType(Type).mappingType()/] [aParameter.name/]
+[mappingType(aParameter.type)/] [aParameter.name/]
 [/for]
 [/template]
 
-[template genParamList(parameters: OrderedSet(Parameter) ) post(trim())]
+[template private genParamList(parameters: OrderedSet(Parameter) ) post(trim())]
 [for(aParameter: Parameter| parameters) separator (',')]
 [aParameter.name/]
 [/for]
 [/template]
 
-[template genMethods(methods:OrderedSet(String)) post(trim())]
+[template private genMethods(methods:OrderedSet(String)) post(trim())]
 [for(method: String| methods) separator (',')]
 RequestMethod.[method/]
 [/for]

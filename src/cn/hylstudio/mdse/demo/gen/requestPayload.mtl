@@ -49,28 +49,3 @@ public void check[aRequestPayload.genClassName()/]([aRequestPayload.genClassName
 	[genCheckCode(aRequestPayload, aRequestPayload.name, aRequestPayload.name)/]
 }
 [/template]
-
-
-[template public genCheckCode (aRequestPayload : RequestPayload, varRef:String, varRefName:String)  post(trim())]
-[for(attr: Attr| aRequestPayload.attrs)]
-[genDomainCheckCode(attr, varRef, varRefName)/]
-[genReferencedCheckCode(attr, varRef, varRefName)/]
-[/for]
-[comment]TODO 用户定义完整性[/comment]
-[/template]
-
-
-[template public genDomainCheckCode (attr : Attr, varRef:String, varRefName:String)post(trim())]
-[comment][if(attr.oclIsTypeOf(RequestAttr) and not attr.oclAsType(RequestAttr).attrRef.oclIsUndefined())][/comment]
-[comment]//[attr.name/] has refer domainAttr[/comment]
-[comment][/if][/comment]
-[for(anAbstractCheckRule : AbstractCheckRule | attr.eAllContents(AbstractCheckRule))]
-[anAbstractCheckRule.genDomainCheckCode(varRef, attr, varRefName)/]
-[/for]
-[/template]
-
-[template public genReferencedCheckCode (attr : Attr, varRef:String, varRefName:String) post(trim())]
-[for(anAbstractCheckRule : AbstractCheckRule | attr.eAllContents(AbstractCheckRule))]
-[anAbstractCheckRule.genReferencedCheckCode(varRef, attr, varRefName)/]
-[/for]  
-[/template]

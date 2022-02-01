@@ -2,9 +2,6 @@
 [module common('http://mdse.hylstudio.cn/hyldesigner')]
 
 [import cn::hylstudio::mdse::demo::gen::classNameGenerator/]
-[import cn::hylstudio::mdse::demo::gen::dto/]
-[import cn::hylstudio::mdse::demo::gen::requestPayload/]
-
 
 [template public convertPackageNameToFilePath(packageName: String) post(trim())]
 	[packageName.replaceAll('\\.', '/')/]
@@ -55,13 +52,7 @@ public void [genSetterMethodName(anAttr)/]([mappingType(anAttr)/] [anAttr.name.t
 [template public mappingType(anAttr:Attr) post(trim())]
 [let type:Type = anAttr.type]
 [mappingType(anAttr.type)/]
-[elselet attr: DtoAttr = anAttr]
-[mappingType(attr.attrRef.type)/]
-[elselet attr: RequestAttr = anAttr]
-[mappingType(attr.attrRef.type)/]
-[elselet attr: ResponseAttr = anAttr]
-[mappingType(attr.attrRef.type)/]
-[elselet attr: DbAttr = anAttr]
+[elselet attr: ReferAttr = anAttr]
 [mappingType(attr.attrRef.type)/]
 [else]
 //mappingType unknown type
@@ -69,25 +60,25 @@ public void [genSetterMethodName(anAttr)/]([mappingType(anAttr)/] [anAttr.name.t
 [/template]
 
 [template public mappingType(aType:Type) post(trim())]
-[if(aType.oclIsTypeOf(PrimitiveType))]
-	[mappingPrimitiveType(aType.oclAsType(PrimitiveType).type)/]
-[elseif (aType.oclIsTypeOf(ReferencedType))]
-	[mappingReferencedType(aType.oclAsType(ReferencedType))/]
+[let aPrimitiveType:PrimitiveType = aType]
+[mappingPrimitiveType(aPrimitiveType.type)/]
+[elselet aReferencedType: ReferencedType = aType]
+[mappingReferencedType(aReferencedType)/]
 [else][comment ¶µ¸öµ×/]
-	[mappingReferencedType(aType.oclAsType(ReferencedType))/]
-[/if]
+[mappingReferencedType(aType.oclAsType(ReferencedType))/]
+[/let]
 [/template]
 
 [template private mappingReferencedType(aReferencedType:ReferencedType) post(trim())]
-[if(aReferencedType.oclIsTypeOf(Dto))]
-	[aReferencedType.oclAsType(Dto).genClassName()/]
-[elseif (aReferencedType.oclIsTypeOf(RequestPayload))]
-	[aReferencedType.oclAsType(RequestPayload).genClassName()/]
-[elseif (aReferencedType.oclIsTypeOf(ResponseResult))]
-	[aReferencedType.oclAsType(ResponseResult).genClassName()/]
+[let aDto:Dto = aReferencedType]
+[aDto.genClassName()/]
+[elselet aRequestPayload: RequestPayload = aReferencedType]
+[aRequestPayload.genClassName()/]
+[elselet aResponseResult: ResponseResult = aReferencedType]
+[aResponseResult.genClassName()/]
 [else]
-	Object
-[/if]
+Object
+[/let]
 [/template]
 
 [template private mappingPrimitiveType(type: String) post(trim())]
@@ -113,17 +104,4 @@ public void [genSetterMethodName(anAttr)/]([mappingType(anAttr)/] [anAttr.name.t
 
 [template public genLogger(className:String) post(trim())]
 private static final Logger LOGGER = LoggerFactory.getLogger([className/].class);
-[/template]
-
-
-[template public commonGenReferencedTypeCheckCode (varRef:String, type:Type, varRefName:String) post(trim()) ]
-[if(type.oclIsTypeOf(Dto))]
-[type.oclAsType(Dto).genCheckCode(varRef, varRefName)/]
-[elseif (type.oclIsTypeOf(RequestPayload))]
-[type.oclAsType(RequestPayload).genCheckCode(varRef, varRefName)/]
-[comment][elseif (type.oclIsTypeOf(ResponseResult))][/comment]
-[comment]	[type.oclAsType(ResponseResult).genCheckCode()/][/comment]
-[else]
-
-[/if]
 [/template]
