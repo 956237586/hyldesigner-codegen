@@ -57,6 +57,15 @@ get[anAttr.name.toUpperFirst()/]
 set[anAttr.name.toUpperFirst()/]
 [/template]
 
+
+[template public genGetterMethodInvoke(varRef:String, anAttr:Attr) post(trim())]
+[varRef/].[genGetterMethodName(anAttr)/]()
+[/template]
+
+[template public genPropertieInvoke(varRefName:String, anAttr:Attr) post(trim())]
+[varRefName/].[anAttr.name/]
+[/template]
+
 [template public mappingType(anAttr:Attr) post(trim())]
 [let type:Type = anAttr.type]
 [mappingType(anAttr.type)/]
@@ -99,17 +108,7 @@ Long
 [elselet aBool:Bool = aPrimitiveType]
 Boolean
 [elselet aCustom:CustomPrimitiveType = aPrimitiveType]
-[let typeLower: String = aCustom.type.toLowerCase()]
-	[if (typeLower.startsWith('str'))]
-	String
-	[elseif (typeLower.startsWith('int'))]
-	Integer
-	[elseif (typeLower.startsWith('bool'))]
-	Boolean
-	[else]
-	[typeLower.toUpperFirst()/]
-	[/if]
-[/let]
+[aCustom.type.toUpperFirst()/]
 [/let]
 [/template]
 
