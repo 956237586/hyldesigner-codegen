@@ -1,7 +1,6 @@
 [comment encoding = UTF-8 /]
 [module requestPayload('http://mdse.hylstudio.cn/hyldesigner')]
 [import cn::hylstudio::mdse::demo::gen::common/]
-[import cn::hylstudio::mdse::demo::gen::classNameGenerator/]
 [import cn::hylstudio::mdse::demo::gen::abstractCheckRule/]
 
 [template public genClassFiles(aRequestPayload : RequestPayload) post(trim())]

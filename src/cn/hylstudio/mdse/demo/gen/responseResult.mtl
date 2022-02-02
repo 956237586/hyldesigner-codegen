@@ -1,7 +1,6 @@
 [comment encoding = UTF-8 /]
 [module responseResult('http://mdse.hylstudio.cn/hyldesigner')]
 [import cn::hylstudio::mdse::demo::gen::common/]
-[import cn::hylstudio::mdse::demo::gen::classNameGenerator/]
 [template public genClassFiles(aResponseResult : ResponseResult) post(trim())]
 [file (aResponseResult.queryJavaFilePath(), false)]
 [aResponseResult.classFileTemplate()/]

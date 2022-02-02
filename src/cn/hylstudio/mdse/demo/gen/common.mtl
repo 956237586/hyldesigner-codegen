@@ -1,7 +1,10 @@
 [comment encoding = UTF-8 /]
 [module common('http://mdse.hylstudio.cn/hyldesigner')]
-
-[import cn::hylstudio::mdse::demo::gen::classNameGenerator/]
+[comment]TODO refactor to same EType[/comment]
+[query public genClassName (aDto : Dto) : String = aDto.name.toUpperFirst() + 'Dto'/]
+[query public genClassName (aRequestPayload : RequestPayload) : String = aRequestPayload.name.toUpperFirst() + 'RequestPayload'/]
+[query public genClassName (aResponseResult : ResponseResult) : String = aResponseResult.name.toUpperFirst() + 'ResponseResult'/]
+[query public genClassName (aController : Controller) : String = aController.name.toUpperFirst() + 'Controller'/]
 
 [template public convertPackageNameToFilePath(packageName: String) post(trim())]
 	[packageName.replaceAll('\\.', '/')/]
@@ -32,21 +35,25 @@ private [mappingType(anAttr)/] [anAttr.name.toLowerFirst()/];
 
 [genSetter(anAttr)/]
 [/template]
-[template public genGetterMethodName(anAttr:Attr) post(trim())]
-get[anAttr.name.toUpperFirst()/]
-[/template]
-[template public genSetterMethodName(anAttr:Attr) post(trim())]
-set[anAttr.name.toUpperFirst()/]
-[/template]
+
 [template public genGetter(anAttr:Attr) post(trim())]
 public [mappingType(anAttr)/] [genGetterMethodName(anAttr)/]() {
     return [anAttr.name.toLowerFirst()/];
 }
 [/template]
+
 [template public genSetter(anAttr:Attr) post(trim())]
 public void [genSetterMethodName(anAttr)/]([mappingType(anAttr)/] [anAttr.name.toLowerFirst()/]) {
     this.[anAttr.name.toLowerFirst()/] = [anAttr.name.toLowerFirst()/];
 }
+[/template]
+
+[template public genGetterMethodName(anAttr:Attr) post(trim())]
+get[anAttr.name.toUpperFirst()/]
+[/template]
+
+[template public genSetterMethodName(anAttr:Attr) post(trim())]
+set[anAttr.name.toUpperFirst()/]
 [/template]
 
 [template public mappingType(anAttr:Attr) post(trim())]
@@ -95,12 +102,11 @@ Object
 [/let]
 [/template]
 
-[template public genStrArr(mappings:OrderedSet(String)) post(trim())]
-[for(mapping: String| mappings) separator (',')]
-"[mapping/]"
+[template public genStrArr(strList:OrderedSet(String)) post(trim())]
+[for(str: String| strList) separator (',')]
+"[str/]"
 [/for]
 [/template]
-
 
 [template public genLogger(className:String) post(trim())]
 private static final Logger LOGGER = LoggerFactory.getLogger([className/].class);

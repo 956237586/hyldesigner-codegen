@@ -3,7 +3,6 @@
 [import cn::hylstudio::mdse::demo::gen::common/]
 [import cn::hylstudio::mdse::demo::gen::requestPayload/]
 [import cn::hylstudio::mdse::demo::gen::responseResult/]
-[import cn::hylstudio::mdse::demo::gen::classNameGenerator/]
 [template public genClassFiles(aController : Controller) post(trim())]
 [file (aController.queryJavaFilePath(), false)]
 [aController.classFileTemplate()/]
