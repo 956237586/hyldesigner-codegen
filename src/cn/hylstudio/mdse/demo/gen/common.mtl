@@ -1,5 +1,6 @@
 [comment encoding = UTF-8 /]
 [module common('http://mdse.hylstudio.cn/hyldesigner')]
+
 [comment]TODO refactor to same EType[/comment]
 [query public genClassName (aDto : Dto) : String = aDto.name.toUpperFirst() + 'Dto'/]
 [query public genClassName (aRequestPayload : RequestPayload) : String = aRequestPayload.name.toUpperFirst() + 'RequestPayload'/]
@@ -68,7 +69,7 @@ set[anAttr.name.toUpperFirst()/]
 
 [template public mappingType(aType:Type) post(trim())]
 [let aPrimitiveType:PrimitiveType = aType]
-[mappingPrimitiveType(aPrimitiveType.type)/]
+[mappingPrimitiveType(aPrimitiveType)/]
 [elselet aReferencedType: ReferencedType = aType]
 [mappingReferencedType(aReferencedType)/]
 [else][comment ¶µ¸öµ×/]
@@ -88,8 +89,17 @@ Object
 [/let]
 [/template]
 
-[template private mappingPrimitiveType(type: String) post(trim())]
-[let typeLower: String = type.toLowerCase()]
+[template private mappingPrimitiveType(aPrimitiveType: PrimitiveType) post(trim())]
+[let aStr:Str = aPrimitiveType]
+String
+[elselet aInt:Int = aPrimitiveType]
+Integer
+[elselet aLong:Long = aPrimitiveType]
+Long
+[elselet aBool:Bool = aPrimitiveType]
+Boolean
+[elselet aCustom:CustomPrimitiveType = aPrimitiveType]
+[let typeLower: String = aCustom.type.toLowerCase()]
 	[if (typeLower.startsWith('str'))]
 	String
 	[elseif (typeLower.startsWith('int'))]
@@ -97,8 +107,9 @@ Object
 	[elseif (typeLower.startsWith('bool'))]
 	Boolean
 	[else]
-	[type.toUpperFirst()/]
+	[typeLower.toUpperFirst()/]
 	[/if]
+[/let]
 [/let]
 [/template]
 

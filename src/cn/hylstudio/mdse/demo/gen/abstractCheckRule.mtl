@@ -47,13 +47,14 @@
 [template public genDomainPrimitiveTypeCheckCode(anAbstractCheckRule : AbstractCheckRule, varRef:String, attr:Attr, varRefName:String, type:Type) post(trim())]
 [let anAbstractCheckRule:PrimitiveTypeCheckRule = anAbstractCheckRule]
 [let aPrimitiveType: PrimitiveType = type] 
-[genPrimitiveChekRuleCode(anAbstractCheckRule, aPrimitiveType.type, varRef, attr, varRefName)/]
+[genPrimitiveChekRuleCode(anAbstractCheckRule, aPrimitiveType, varRef, attr, varRefName)/]
 [/let]
 [/let]
 [/template]
 
-[template public genPrimitiveChekRuleCode (aPrimitiveTypeCheckRule : PrimitiveTypeCheckRule, type:String, varRef:String, attr:Attr, varRefName:String) post(trim()) ]
-[let typeLower: String = type.toLowerCase()]
+[template public genPrimitiveChekRuleCode (aPrimitiveTypeCheckRule : PrimitiveTypeCheckRule, aPrimitiveType:PrimitiveType, varRef:String, attr:Attr, varRefName:String) post(trim()) ]
+[let aType:String = mappingType(aPrimitiveType)]
+[let typeLower: String = aType.toLowerCase()]
 	[if (typeLower.startsWith('str') and aPrimitiveTypeCheckRule.oclIsKindOf(StringTypeCheckRule))]
 [genStringTypeCheckCode(aPrimitiveTypeCheckRule.oclAsType(StringTypeCheckRule),  varRef, mappingType(attr), attr, varRefName)/]
 	[elseif ((typeLower.startsWith('int') or typeLower.startsWith('long')) and aPrimitiveTypeCheckRule.oclIsKindOf(NumberTypeCheckRule))]
@@ -61,8 +62,9 @@
 	[elseif (typeLower.startsWith('bool'))]
 [genBoolTypeCheckCode(aPrimitiveTypeCheckRule.oclAsType(BoolTypeCheckRule),  varRef, mappingType(attr), attr, varRefName)/]
 	[else]
-// [type.toUpperFirst()/] check from genPrimitiveChekRuleCode
+// [aType.toUpperFirst()/] check from genPrimitiveChekRuleCode
 	[/if]
+[/let]
 [/let]
 [/template]
 
